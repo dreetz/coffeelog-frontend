@@ -1,0 +1,8 @@
+services:
+  app:
+    image: coffeelog-frontend:build-test
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_PUB_VAR: "public variable docker compose"
+      SERVER_VAR: "server variable docker compose"

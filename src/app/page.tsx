@@ -1,7 +1,12 @@
 import Image from "next/image";
 import styles from "./page.module.css";
+import { connection } from 'next/server'
 
-export default function Home() {
+export default async function Home() {
+  await connection();
+  const publicVar: string = process.env.NEXT_PUBLIC_PUB_VAR!
+  const serverVar: string = process.env.SERVER_VAR!
+
   return (
     <div className={styles.page}>
       <main className={styles.main}>
@@ -19,6 +24,9 @@ export default function Home() {
           </li>
           <li>Save and see your changes instantly.</li>
         </ol>
+        {publicVar}
+        <br/>
+        {serverVar}
 
         <div className={styles.ctas}>
           <a
