@@ -30,7 +30,6 @@ jobs:
           # generate Docker tags based on branch name
           tags:
             type=ref,event=branch
-            latest
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
