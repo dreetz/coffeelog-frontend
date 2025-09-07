@@ -1,6 +1,7 @@
 import { ICoffee } from "@/interfaces/ICoffeeLog";
 
 export async function getCoffeeList(): Promise<ICoffee[]> {
+  console.log(`API URL ${process.env.BACKEND_URL}`);
   if (process.env.BACKEND_URL) {
     const resultData: Response = await fetch(
       `${process.env.BACKEND_URL}/coffee/`,
