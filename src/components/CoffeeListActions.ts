@@ -1,6 +1,9 @@
 import { ICoffee } from "@/interfaces/ICoffeeLog";
+import { connection } from "next/server";
 
 export async function getCoffeeList(): Promise<ICoffee[]> {
+  await connection();
+
   console.log(`API URL ${process.env.BACKEND_URL}`);
   if (process.env.BACKEND_URL) {
     const resultData: Response = await fetch(
@@ -14,6 +17,8 @@ export async function getCoffeeList(): Promise<ICoffee[]> {
 }
 
 export async function postCoffeeList(newCoffee: ICoffee): Promise<boolean> {
+  await connection();
+
   if (process.env.BACKEND_URL) {
     const resultData: Response = await fetch(
       `${process.env.BACKEND_URL}/coffee/`,
@@ -32,6 +37,8 @@ export async function postCoffeeList(newCoffee: ICoffee): Promise<boolean> {
 }
 
 export async function patchCoffeeList(newCoffee: ICoffee): Promise<boolean> {
+  await connection();
+
   if (process.env.BACKEND_URL) {
     const resultData: Response = await fetch(
       `${process.env.BACKEND_URL}/coffee/`,
