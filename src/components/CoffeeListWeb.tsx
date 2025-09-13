@@ -1,18 +1,15 @@
-import {
-  postCoffeeList,
-  getCoffeeList,
-  patchCoffeeList,
-} from "@/components/CoffeeListActions";
+import { getCoffeeList } from "@/components/CoffeeListActions";
 import CoffeeListUI from "@/components/CoffeeListUI";
 import { ICoffee } from "@/interfaces/ICoffeeLog";
 import { Suspense } from "react";
 
 export default function CoffeeListWeb() {
   const data: Promise<ICoffee[]> = getCoffeeList();
+  const apiUrl: string = process.env.BACKEND_URL!;
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <CoffeeListUI data={data} />
+      <CoffeeListUI data={data} apiUrl={apiUrl} />
     </Suspense>
   );
 }

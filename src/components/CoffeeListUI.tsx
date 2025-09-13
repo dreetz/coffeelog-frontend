@@ -25,6 +25,14 @@ import {
 } from "@mui/x-data-grid";
 import { ICoffee } from "@/interfaces/ICoffeeLog";
 import { v4 as uuidv4 } from "uuid";
+import {
+  patchCoffeeList,
+  postCoffeeList,
+  deleteCoffeeList,
+} from "@/components/CoffeeListActions";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 
 declare module "@mui/x-data-grid" {
   interface ToolbarPropsOverrides {
@@ -43,15 +51,22 @@ function EditToolbar(props: GridSlotProps["toolbar"]) {
 
   const handleClick = () => {
     const id = rows[rows.length - 1].id + 1;
+    const today = dayjs()
+      .set("hour", 0)
+      .set("minute", 0)
+      .set("second", 0)
+      .set("millisecond", 0)
+      .utc()
+      .toDate();
     setRows(
       (oldRows: GridRowsProp<ICoffee>): GridRowsProp<ICoffee> => [
         ...oldRows,
         {
           roasting_facility: "",
           coffee_name: "",
-          size_g: 0,
-          roast_date: "",
-          open_date: "",
+          size_g: 250,
+          roast_date: today,
+          open_date: today,
           price: 0,
           country_of_origin: "",
           id,
@@ -61,7 +76,7 @@ function EditToolbar(props: GridSlotProps["toolbar"]) {
     );
     setRowModesModel((oldModel: GridRowModesModel) => ({
       ...oldModel,
-      [id]: { mode: GridRowModes.Edit, fieldToFocus: "coffee_name" },
+      [id]: { mode: GridRowModes.Edit, fieldToFocus: "roasting_facility" },
     }));
   };
 
@@ -76,7 +91,13 @@ function EditToolbar(props: GridSlotProps["toolbar"]) {
   );
 }
 
-export default function CoffeeListUI({ data }: { data: Promise<ICoffee[]> }) {
+export default function CoffeeListUI({
+  data,
+  apiUrl,
+}: {
+  data: Promise<ICoffee[]>;
+  apiUrl: string;
+}) {
   const coffeList: ICoffee[] = use(data);
   const [rows, setRows] = useState<GridRowsProp<ICoffee>>(coffeList);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
@@ -98,8 +119,9 @@ export default function CoffeeListUI({ data }: { data: Promise<ICoffee[]> }) {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
   };
 
-  const handleDeleteClick = (id: GridRowId) => () => {
+  const handleDeleteClick = (id: GridRowId) => async () => {
     setRows(rows.filter((row: ICoffee) => row.id !== id));
+    const result = await deleteCoffeeList(apiUrl, parseInt(id.toString()));
   };
 
   const handleCancelClick = (id: GridRowId) => () => {
@@ -114,11 +136,23 @@ export default function CoffeeListUI({ data }: { data: Promise<ICoffee[]> }) {
     }
   };
 
-  const processRowUpdate = (newRow: GridRowModel<ICoffee>) => {
-    const updatedRow = { ...newRow, isNew: false };
+  const processRowUpdate = async (newRow: GridRowModel<ICoffee>) => {
+    const oldRows = [...rows];
+    const updatedRow: ICoffee = {
+      ...newRow,
+      isNew: false,
+    };
     setRows(
       rows.map((row: ICoffee) => (row.id === newRow.id ? updatedRow : row)),
     );
+    let result = false;
+
+    if (newRow.isNew) {
+      result = await postCoffeeList(apiUrl, updatedRow);
+    } else {
+      result = await patchCoffeeList(apiUrl, updatedRow.id, updatedRow);
+    }
+
     return updatedRow;
   };
 
@@ -164,7 +198,7 @@ export default function CoffeeListUI({ data }: { data: Promise<ICoffee[]> }) {
       width: 120,
       editable: true,
       type: "date",
-      valueGetter: (value) => new Date(value),
+      valueGetter: (value) => dayjs(value).toDate(),
     },
     {
       field: "open_date",
@@ -172,7 +206,7 @@ export default function CoffeeListUI({ data }: { data: Promise<ICoffee[]> }) {
       width: 120,
       editable: true,
       type: "date",
-      valueGetter: (value) => new Date(value),
+      valueGetter: (value) => dayjs(value).toDate(),
     },
     {
       field: "price",
@@ -256,6 +290,7 @@ export default function CoffeeListUI({ data }: { data: Promise<ICoffee[]> }) {
         onRowModesModelChange={handleRowModesModelChange}
         onRowEditStop={handleRowEditStop}
         processRowUpdate={processRowUpdate}
+        onProcessRowUpdateError={(error) => console.error(error)}
         slots={{ toolbar: EditToolbar }}
         slotProps={{
           toolbar: { rows, setRows, setRowModesModel },
