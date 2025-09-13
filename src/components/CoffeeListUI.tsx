@@ -164,7 +164,7 @@ export default function CoffeeListUI({
     {
       field: "roasting_facility",
       headerName: "Rösterei",
-      width: 120,
+      width: 250,
       align: "left",
       headerAlign: "left",
       editable: true,
@@ -172,7 +172,7 @@ export default function CoffeeListUI({
     {
       field: "coffee_name",
       headerName: "Kaffee",
-      width: 200,
+      width: 250,
       align: "left",
       headerAlign: "left",
       editable: true,
@@ -180,7 +180,7 @@ export default function CoffeeListUI({
     {
       field: "country_of_origin",
       headerName: "Herkunftsland",
-      width: 180,
+      width: 250,
       align: "left",
       headerAlign: "left",
       editable: true,
@@ -189,13 +189,13 @@ export default function CoffeeListUI({
       field: "size_g",
       headerName: "Größe (g)",
       type: "number",
-      width: 120,
+      width: 110,
       editable: true,
     },
     {
       field: "roast_date",
       headerName: "Röstdatum",
-      width: 120,
+      width: 140,
       editable: true,
       type: "date",
       valueGetter: (value) => dayjs(value).toDate(),
@@ -203,7 +203,7 @@ export default function CoffeeListUI({
     {
       field: "open_date",
       headerName: "Öffnungsdatum",
-      width: 120,
+      width: 140,
       editable: true,
       type: "date",
       valueGetter: (value) => dayjs(value).toDate(),
@@ -211,7 +211,7 @@ export default function CoffeeListUI({
     {
       field: "price",
       headerName: "Preis",
-      width: 80,
+      width: 120,
       editable: true,
       type: "number",
     },
@@ -272,7 +272,7 @@ export default function CoffeeListUI({
   return (
     <Box
       sx={{
-        height: 500,
+        height: 700,
         width: "100%",
         "& .actions": {
           color: "text.secondary",

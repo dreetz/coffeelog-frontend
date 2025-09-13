@@ -5,7 +5,7 @@ import CoffeeListWeb from "@/components/CoffeeListWeb";
 
 export default function Home() {
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="xl">
       <Box
         sx={{
           my: 4,
