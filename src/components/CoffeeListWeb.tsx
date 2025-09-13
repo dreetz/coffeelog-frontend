@@ -5,7 +5,7 @@ import { Suspense } from "react";
 
 export default function CoffeeListWeb() {
   const data: Promise<ICoffee[]> = getCoffeeList();
-  const apiUrl: string = process.env.BACKEND_URL!;
+  const apiUrl: string = process.env.NEXT_PUBLIC_BACKEND_URL!;
 
   return (
     <Suspense fallback={<div>Loading...</div>}>

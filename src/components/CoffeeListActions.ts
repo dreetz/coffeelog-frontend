@@ -7,10 +7,10 @@ dayjs.extend(utc);
 export async function getCoffeeList(): Promise<ICoffee[]> {
   await connection();
 
-  console.log(`API URL ${process.env.BACKEND_URL}`);
-  if (process.env.BACKEND_URL) {
+  console.log(`API URL ${process.env.NEXT_PUBLIC_BACKEND_URL}`);
+  if (process.env.NEXT_PUBLIC_BACKEND_URL) {
     const resultData: Response = await fetch(
-      `${process.env.BACKEND_URL}/coffee/`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/coffee/`,
       {},
     );
     return resultData.json();
