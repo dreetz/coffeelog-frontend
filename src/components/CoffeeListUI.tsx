@@ -50,7 +50,9 @@ function EditToolbar(props: GridSlotProps["toolbar"]) {
   const { rows, setRows, setRowModesModel } = props;
 
   const handleClick = () => {
-    const id = rows[rows.length - 1].id + 1;
+    const rows_sorted: Array<ICoffee> = rows.toSorted((a: ICoffee, b: ICoffee) => b.id - a.id) // Sort rows desc by id
+    console.log(rows_sorted);
+    const id = rows_sorted[0].id + 1;
     const today = dayjs()
       .set("hour", 0)
       .set("minute", 0)
