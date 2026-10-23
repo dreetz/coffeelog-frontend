@@ -1,13 +1,16 @@
-name: Publish Docker Image
+name: Create and publish a Docker image
+
 on:
   push:
     branches:
       - main
-      - stable
-      - dev
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  push_to_registry:
+  build-and-push-image:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     permissions:
@@ -16,37 +19,37 @@ jobs:
       attestations: write
       id-token: write
     steps:
-      - name: Log in to Docker Hub
-        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: dreetz/coffeelog-frontend
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           # generate Docker tags based on branch name
-          tags:
-            type=ref,event=branch
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+          #tags:
+          #  type=ref,event=branch
 
       - name: Build and push Docker Image
         id: push
-        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
+          context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      # Since this repository is private feature is not available.
-      # TODO enable feature if repo became public
-      # - name: Generate artifact attestation
-      #   uses: actions/attest-build-provenance@v3
-      #   with:
-      #     subject-name: index.docker.io/my-docker-hub-namespace/my-docker-hub-repository
-      #     subject-digest: ${{ steps.push.outputs.digest }}
-      #     push-to-registry: true
+      - name: Generate artifact attestation
+        uses: actions/attest@v4
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
