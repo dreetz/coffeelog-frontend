@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 RUN npm install -g corepack
 RUN corepack enable pnpm
-RUN pnpm i --no-frozen-lockfile
+RUN pnpm ci
 
 FROM base AS builder
 WORKDIR /app
