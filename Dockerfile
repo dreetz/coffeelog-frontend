@@ -15,7 +15,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN corepack enable pnpm && pnpm run build
+RUN npm install -g corepack && corepack enable pnpm && pnpm run build
 
 FROM base AS runner
 WORKDIR /app
